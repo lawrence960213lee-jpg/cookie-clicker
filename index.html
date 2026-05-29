@@ -3,45 +3,99 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Cookie Clicker - 競速版</title>
+    <title>餅乾宇宙帝國</title>
     <style>
-        * { box-sizing: border-box; margin: 0; padding: 0; -webkit-user-select: none; user-select: none; }
+        /* 全域設定：防止反白、流暢動畫 */
+        * { 
+            box-sizing: border-box; 
+            margin: 0; 
+            padding: 0; 
+            -webkit-user-select: none; 
+            user-select: none; 
+        }
         input { -webkit-user-select: text; user-select: text; }
-        body { font-family: 'Segoe UI', 'Microsoft JhengHei', sans-serif; background: radial-gradient(circle at center, #1b2735 0%, #090a0f 100%); background-attachment: fixed; min-height: 100vh; display: flex; justify-content: center; align-items: flex-start; padding: 40px 0; color: #fff; overflow-y: auto; }
-        .glass-panel { background: rgba(255, 255, 255, 0.1); backdrop-filter: blur(20px); border: 1px solid rgba(255, 255, 255, 0.2); border-radius: 30px; padding: 35px; box-shadow: 0 25px 50px rgba(0, 0, 0, 0.6); text-align: center; width: 90%; max-width: 600px; margin: 20px auto; display: none; }
+
+        body {
+            font-family: 'Segoe UI', 'Microsoft JhengHei', sans-serif;
+            background: radial-gradient(circle at center, #1b2735 0%, #090a0f 100%);
+            background-attachment: fixed;
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: flex-start;
+            padding: 40px 0;
+            color: #fff;
+            overflow-y: auto;
+        }
+
+        /* 玻璃擬態面板 */
+        .glass-panel {
+            background: rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(20px);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            border-radius: 30px;
+            padding: 35px;
+            box-shadow: 0 25px 50px rgba(0, 0, 0, 0.6);
+            text-align: center;
+            width: 90%;
+            max-width: 600px;
+            margin: 20px auto;
+            display: none;
+            position: relative;
+            z-index: 10;
+        }
+
         .active-panel { display: block; animation: zoomIn 0.5s ease; }
-        .cookie-container { position: relative; display: inline-block; margin: 20px 0; cursor: pointer; }
-        .cookie-btn { font-size: 100px; filter: drop-shadow(0 0 25px rgba(255, 200, 100, 0.5)); transition: transform 0.1s; pointer-events: none; }
-        .cookie-container:active .cookie-btn { transform: scale(0.9); }
-        .stats-board { background: rgba(0, 0, 0, 0.4); border-radius: 20px; padding: 20px; margin-bottom: 20px; }
-        .store-section { display: grid; grid-template-columns: 1fr 1fr; gap: 15px; }
-        button { background: linear-gradient(135deg, #f6d365 0%, #fda085 100%); color: #222; border: none; padding: 12px; border-radius: 12px; font-weight: bold; cursor: pointer; transition: 0.2s; }
-        button:disabled { background: #444; color: #777; opacity: 0.6; }
-        .leaderboard-tabs { display: flex; gap: 10px; margin-bottom: 15px; }
-        .tab-btn { flex: 1; padding: 10px; background: rgba(255,255,255,0.1); color: white; border-radius: 10px; }
-        .tab-btn.active { background: #f39c12; }
-        table { width: 100%; border-collapse: collapse; margin-top: 15px; }
-        th, td { padding: 10px; border-bottom: 1px solid rgba(255,255,255,0.1); text-align: left; }
-        .mode-indicator { display: inline-block; padding: 5px 15px; border-radius: 20px; font-size: 14px; font-weight: bold; margin-bottom: 10px; background: #667eea; }
+        @keyframes zoomIn { from { opacity: 0; transform: scale(0.9); } to { opacity: 1; transform: scale(1); } }
+
+        /* 模式與計時器 */
+        .mode-indicator {
+            display: inline-block; padding: 5px 15px; border-radius: 20px;
+            font-size: 14px; font-weight: bold; margin-bottom: 10px;
+            background: #667eea; color: white;
+        }
         .speedrun-active { background: #ff4757; box-shadow: 0 0 15px #ff4757; }
         .timer-display { font-family: monospace; font-size: 24px; color: #ff4757; margin-bottom: 10px; }
-        .floating-text { position: absolute; color: #ffd700; font-weight: bold; font-size: 28px; pointer-events: none; animation: floatUp 0.8s forwards; }
+
+        /* 餅乾按鈕 */
+        .cookie-container { position: relative; display: inline-block; margin: 20px 0; cursor: pointer; }
+        .cookie-btn { font-size: 100px; transition: transform 0.1s; filter: drop-shadow(0 0 25px rgba(255, 200, 100, 0.5)); pointer-events: none; }
+        .cookie-container:active .cookie-btn { transform: scale(0.9); }
+
+        .floating-text { position: absolute; color: #ffd700; font-weight: bold; font-size: 28px; pointer-events: none; animation: floatUp 0.8s forwards; z-index: 100; }
         @keyframes floatUp { 0% { transform: translateY(0); opacity: 1; } 100% { transform: translateY(-80px); opacity: 0; } }
-        @keyframes zoomIn { from { opacity: 0; transform: scale(0.9); } to { opacity: 1; transform: scale(1); } }
+
+        /* 商店與按鈕 */
+        .stats-board { background: rgba(0, 0, 0, 0.4); border-radius: 20px; padding: 20px; margin-bottom: 20px; }
+        .store-section { display: grid; grid-template-columns: 1fr 1fr; gap: 15px; }
+        button {
+            background: linear-gradient(135deg, #f6d365 0%, #fda085 100%);
+            color: #222; border: none; padding: 12px; border-radius: 12px;
+            font-weight: bold; cursor: pointer; transition: 0.2s;
+        }
+        button:hover:not(:disabled) { transform: translateY(-2px); filter: brightness(1.1); }
+        button:disabled { background: #444; color: #777; opacity: 0.6; cursor: not-allowed; }
+
+        /* 排行榜 */
+        .leaderboard-tabs { display: flex; gap: 10px; margin-bottom: 15px; }
+        .tab-btn { flex: 1; padding: 10px; background: rgba(255,255,255,0.1); color: white; border-radius: 10px; cursor: pointer; }
+        .tab-btn.active { background: #f39c12; }
+        table { width: 100%; border-collapse: collapse; margin-top: 10px; }
+        th, td { padding: 12px; border-bottom: 1px solid rgba(255,255,255,0.1); text-align: left; }
     </style>
 </head>
 <body>
 
     <div id="authPanel" class="glass-panel active-panel">
         <h1>🌠 餅乾宇宙帝國</h1>
-        <p style="font-size: 12px; color: #aaa;">競速</p>
-        <input type="text" id="usernameInput" placeholder="指揮官帳號" style="width:80%; padding:10px; margin-top:20px; border-radius:8px;">
-        <input type="password" id="passwordInput" placeholder="密鑰" style="width:80%; padding:10px; margin-top:10px; border-radius:8px;">
-        <div style="margin-top: 20px;">
-            <button id="loginBtn">進入帝國</button>
-            <button id="regBtn" style="background: #38d39f;">建立身分</button>
+        <p style="font-size: 12px; color: #aaa; margin-top: 5px;">Firebase 雲端架構 v2.0</p>
+        <input type="text" id="usernameInput" placeholder="指揮官帳號" style="width:80%; padding:12px; margin-top:20px; border-radius:8px; border:none; outline:none;">
+        <input type="password" id="passwordInput" placeholder="密鑰" style="width:80%; padding:12px; margin-top:10px; border-radius:8px; border:none; outline:none;">
+        <div style="margin-top: 25px;">
+            <button id="loginBtn" style="padding: 12px 30px;">進入帝國</button>
+            <button id="regBtn" style="background: #38d39f; padding: 12px 30px; margin-left: 10px;">建立身分</button>
         </div>
-        <div id="authMessage" style="color: #ff6b6b; margin-top: 15px;"></div>
+        <div id="authMessage" style="color: #ff6b6b; margin-top: 15px; font-size: 14px;"></div>
     </div>
 
     <div id="gamePanel" class="glass-panel">
@@ -49,8 +103,8 @@
         <div id="speedrunTimer" class="timer-display" style="display:none;">00:00.00</div>
         
         <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px;">
-            <span id="greeting" style="color: #f6d365;"></span>
-            <button id="toggleModeBtn" style="font-size:12px;">切換為競速模式</button>
+            <span id="greeting" style="color: #f6d365; font-weight: bold;"></span>
+            <button id="toggleModeBtn" style="font-size:12px; padding: 5px 10px;">切換為競速模式</button>
         </div>
         
         <div class="cookie-container" id="cookieArea">
@@ -71,8 +125,8 @@
             <button id="btnBuyAuto">👵 聘僱奶奶<br><small>💰 <span id="autoCost">100</span></small></button>
         </div>
 
-        <button id="openRankBtn" style="width:100%; margin-top:20px; background: #f39c12;">🏆 全球排行榜</button>
-        <button onclick="location.reload()" style="background:#ff6b6b; margin-top:10px; font-size:10px;">登出</button>
+        <button id="openRankBtn" style="width:100%; margin-top:20px; background: #f39c12; font-size: 16px;">🏆 全球排行榜</button>
+        <button onclick="location.reload()" style="background:#ff6b6b; margin-top:10px; font-size:10px; padding: 5px;">登出帳號</button>
     </div>
 
     <div id="leaderboardPanel" class="glass-panel">
@@ -107,7 +161,7 @@
 
         // 2. 遊戲變數
         let currentUser = null;
-        let userData = null; // 儲存無盡模式資料
+        let userData = null; 
         let isSpeedrunMode = false;
         let speedData = { cookies: 0, clickPower: 1, clickCost: 50, autoClickers: 0, autoCost: 100 };
         let speedrunStartTime = null;
@@ -119,7 +173,6 @@
             document.getElementById(id).classList.add('active-panel');
         }
 
-        // --- 核心邏輯 ---
         function formatTime(ms) {
             let s = Math.floor(ms / 1000);
             let m = Math.floor(s / 60);
@@ -128,6 +181,7 @@
             return `${m.toString().padStart(2, '0')}:${s.toString().padStart(2, '0')}.${mm.toString().padStart(2, '0')}`;
         }
 
+        // 3. 核心邏輯
         function updateUI() {
             if(!userData) return;
             const target = isSpeedrunMode ? speedData : userData;
@@ -144,13 +198,13 @@
             }
         }
 
-        function saveToCloud() {
+        async function saveToCloud() {
             if(currentUser && userData && !isSpeedrunMode) {
-                db.ref('users/' + currentUser).set(userData);
+                await db.ref('users/' + currentUser).set(userData);
             }
         }
 
-        // --- 模式切換 ---
+        // 模式切換
         document.getElementById('toggleModeBtn').onclick = () => {
             if(confirm("切換模式會重置本次點擊進度，確定嗎？")) {
                 isSpeedrunMode = !isSpeedrunMode;
@@ -182,7 +236,7 @@
             updateUI();
         }
 
-        // --- 點擊與升級 ---
+        // 點擊事件
         document.getElementById('cookieArea').onclick = (e) => {
             if(!userData) return;
             const target = isSpeedrunMode ? speedData : userData;
@@ -202,11 +256,15 @@
                 target.totalCookies += target.clickPower;
             }
 
-            // 浮動文字
+            // 浮動效果
             const rect = e.currentTarget.getBoundingClientRect();
-            const t = document.createElement('div'); t.className = 'floating-text'; t.innerText = '+'+target.clickPower;
-            t.style.left = (e.clientX - rect.left) + 'px'; t.style.top = (e.clientY - rect.top) + 'px';
-            e.currentTarget.appendChild(t); setTimeout(()=>t.remove(), 800);
+            const t = document.createElement('div'); 
+            t.className = 'floating-text'; 
+            t.innerText = '+'+target.clickPower;
+            t.style.left = (e.clientX - rect.left) + 'px'; 
+            t.style.top = (e.clientY - rect.top) + 'px';
+            e.currentTarget.appendChild(t); 
+            setTimeout(()=>t.remove(), 800);
             updateUI();
         };
 
@@ -214,15 +272,17 @@
             hasFinishedSpeedrun = true;
             clearInterval(speedrunTimerInterval);
             const finalTime = Date.now() - speedrunStartTime;
+            
             if (!userData.bestSpeedrunTime || finalTime < userData.bestSpeedrunTime) {
                 userData.bestSpeedrunTime = finalTime;
+                await db.ref('users/' + currentUser).set(userData); // 強制同步
                 alert(`🏆 新紀錄！用時：${formatTime(finalTime)}`);
-                saveToCloud();
             } else {
                 alert(`挑戰完成！用時：${formatTime(finalTime)}`);
             }
         }
 
+        // 購買邏輯
         document.getElementById('btnUpgradeClick').onclick = () => {
             const target = isSpeedrunMode ? speedData : userData;
             if(target.cookies >= target.clickCost) {
@@ -245,17 +305,20 @@
             }
         };
 
-        // --- 登入與排行 ---
+        // 登入與註冊
         document.getElementById('loginBtn').onclick = async () => {
             const user = document.getElementById('usernameInput').value.trim();
             const pass = document.getElementById('passwordInput').value;
             if(!user || !pass) return;
+            document.getElementById('authMessage').innerText = "載入中...";
             const snapshot = await db.ref('users/' + user).once('value');
             const data = snapshot.val();
             if (data && data.password === pass) {
                 currentUser = user; userData = data;
                 document.getElementById('greeting').innerText = `指揮官: ${user}`;
                 showPanel('gamePanel'); updateUI();
+                
+                // 自動產出與存檔循環
                 setInterval(() => {
                     if(userData) {
                         const target = isSpeedrunMode ? speedData : userData;
@@ -267,7 +330,9 @@
                     }
                 }, 100);
                 setInterval(saveToCloud, 5000);
-            } else { alert("帳號或密鑰錯誤"); }
+            } else { 
+                document.getElementById('authMessage').innerText = "帳號或密鑰錯誤"; 
+            }
         };
 
         document.getElementById('regBtn').onclick = async () => {
@@ -277,29 +342,40 @@
             const snapshot = await db.ref('users/' + user).once('value');
             if(snapshot.exists()) { alert("此帳號已被佔用"); }
             else {
-                await db.ref('users/' + user).set({ password: pass, cookies: 0, totalCookies: 0, clickPower: 1, clickCost: 50, autoClickers: 0, autoCost: 100, bestSpeedrunTime: null });
+                await db.ref('users/' + user).set({ 
+                    password: pass, cookies: 0, totalCookies: 0, 
+                    clickPower: 1, clickCost: 50, autoClickers: 0, 
+                    autoCost: 100, bestSpeedrunTime: null 
+                });
                 alert("建立成功，請登入！");
             }
         };
 
+        // 排行榜渲染
         const renderRank = async (mode) => {
             const snapshot = await db.ref('users').once('value');
             const all = snapshot.val();
+            if(!all) return;
             let list = Object.keys(all).map(k => ({ name: k, ...all[k] }));
             const body = document.getElementById('leaderboardBody');
             body.innerHTML = "";
             
             if(mode === 'endless') {
                 document.getElementById('rankTitle').innerText = "總產量";
-                list.sort((a,b) => b.totalCookies - a.totalCookies);
-                body.innerHTML = list.slice(0,10).map((p,i) => `<tr><td>${i+1}</td><td>${p.name}</td><td>${Math.floor(p.totalCookies).toLocaleString()}</td></tr>`).join('');
+                list.sort((a,b) => (b.totalCookies || 0) - (a.totalCookies || 0));
+                body.innerHTML = list.slice(0,10).map((p,i) => `<tr><td>${i+1}</td><td>${p.name}</td><td>${Math.floor(p.totalCookies || 0).toLocaleString()}</td></tr>`).join('');
             } else {
                 document.getElementById('rankTitle').innerText = "最佳用時";
-                list = list.filter(p => p.bestSpeedrunTime).sort((a,b) => a.bestSpeedrunTime - b.bestSpeedrunTime);
-                body.innerHTML = list.slice(0,10).map((p,i) => `<tr><td>${i+1}</td><td>${p.name}</td><td>${formatTime(p.bestSpeedrunTime)}</td></tr>`).join('');
+                list = list.filter(p => p.bestSpeedrunTime && p.bestSpeedrunTime > 0).sort((a,b) => a.bestSpeedrunTime - b.bestSpeedrunTime);
+                if(list.length === 0) {
+                    body.innerHTML = `<tr><td colspan="3" style="text-align:center; padding:20px;">尚無競速紀錄</td></tr>`;
+                } else {
+                    body.innerHTML = list.slice(0,10).map((p,i) => `<tr><td>${i+1}</td><td>${p.name}</td><td>${formatTime(p.bestSpeedrunTime)}</td></tr>`).join('');
+                }
             }
         };
 
+        // 排行榜事件
         document.getElementById('tabEndless').onclick = () => {
             document.getElementById('tabEndless').classList.add('active');
             document.getElementById('tabSpeed').classList.remove('active');
